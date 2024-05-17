@@ -1,3 +1,4 @@
+# Pictriever
 A python script based off AuroraWright's owocr, which uses Google Lens to extract text from image.
 
 ## Features
