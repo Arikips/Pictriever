@@ -1,0 +1,5 @@
+{
+    "select_area": "ctrl+alt+s",
+    "scan_area": "ctrl+alt+x",
+    "terminate_app": "ctrl+alt+q"
+}
