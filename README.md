@@ -34,7 +34,7 @@ A python script based off AuroraWright's owocr, which uses Google Lens to extrac
     The default hotkeys are:
     - `ctrl+alt+s` for selecting the area
     - `ctrl+alt+x` for scanning the selected area
-    - `ctrl+alt+d` for toggling the autoscan
+    - `ctrl+alt+a` for toggling the autoscan
     - `ctrl+alt+q` for terminating the application
 
     You can change these hotkeys by editing the `settings.json` file which will be generated in the project directory after the first run.
