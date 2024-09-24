@@ -1,5 +1,7 @@
 {
     "select_area": "ctrl+alt+s",
     "scan_area": "ctrl+alt+x",
-    "terminate_app": "ctrl+alt+q"
+    "terminate_app": "ctrl+alt+q",
+    "toggle_auto_scan": "ctrl+alt+d",
+    "auto_scan_interval": 2
 }
