@@ -1,6 +1,8 @@
 import tkinter as tk
 import pyperclip
 import keyboard
+import threading
+import time
 from PIL import ImageGrab
 from google_lens import GoogleLens
 from settings import Settings
@@ -9,12 +11,14 @@ class ScreenCaptureApp:
     def __init__(self):
         self.settings = Settings()
         self.hotkeys = self.settings.hotkeys
+        self.lastText = "qweerwsasfafqw"
         self.rect = None
         self.start_x = None
         self.start_y = None
         self.end_x = None
         self.end_y = None
         self.selection_mode = False
+        self.auto_scan_mode = False
         self.root = tk.Tk()
         self.root.withdraw()  # Hide the main tkinter window
         self.canvas = tk.Canvas(self.root, cursor="cross", bg="gray", highlightthickness=0)
@@ -26,8 +30,17 @@ class ScreenCaptureApp:
         keyboard.add_hotkey(self.hotkeys['select_area'], self.start_selection)
         keyboard.add_hotkey(self.hotkeys['scan_area'], self.scan_area)
         keyboard.add_hotkey(self.hotkeys['terminate_app'], self.terminate_app)
+        keyboard.add_hotkey(self.hotkeys['toggle_auto_scan'], self.toggle_auto_scan)
 
-        print(f"Hotkeys loaded: {self.hotkeys}")
+        self.display_welcome_message()
+
+    def display_welcome_message(self):
+        print("Welcome to Pictriever")
+        print("Available hotkeys:")
+        print(f"--select area ({self.hotkeys['select_area']})")
+        print(f"--scan area ({self.hotkeys['scan_area']})")
+        print(f"--toggle autoscan ({self.hotkeys['toggle_auto_scan']})")
+        print(f"--terminate app ({self.hotkeys['terminate_app']})")
 
     def start_selection(self):
         self.selection_mode = True
@@ -62,16 +75,49 @@ class ScreenCaptureApp:
             screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
             success, result, time_taken = self.lens(screenshot)
             if success:
-                pyperclip.copy(result)
-                print(f"Ritrieved text:\n{result}")
+                text = self.getUnique(self.lastText, result)
+                pyperclip.copy(text)
+                print(f"Retrieved text:\n{text}")
                 print(f"Text was successfully retrieved. Time taken: {time_taken:.2f} seconds")
+                self.lastText += text
             else:
                 print(f"Failed to retrieve text: {result}")
+
+    def toggle_auto_scan(self):
+        self.auto_scan_mode = not self.auto_scan_mode
+        if self.auto_scan_mode:
+            print("Auto-scan mode enabled")
+            self.start_auto_scan()
+        else:
+            print("Auto-scan mode disabled")
+
+    def start_auto_scan(self):
+        def auto_scan():
+            while self.auto_scan_mode:
+                self.scan_area()
+                time.sleep(self.settings.auto_scan_interval)
+
+        threading.Thread(target=auto_scan, daemon=True).start()
 
     def terminate_app(self):
         print("Terminating the application...")
         self.root.quit()
         self.root.destroy()
+
+    def getUnique(self, str1, str2):
+        # Find the common prefix of the two strings
+        min_length = min(len(str1), len(str2))
+        common_prefix_length = 0
+
+        for i in range(min_length):
+            if str1[i] == str2[i]:
+                common_prefix_length += 1
+            else:
+                break
+
+    # The unique segment of the second string
+        unique_segment = str2[common_prefix_length:].strip()
+        return unique_segment
 
 if __name__ == "__main__":
     app = ScreenCaptureApp()
