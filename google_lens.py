@@ -8,7 +8,6 @@ import re
 class GoogleLens:
     def __init__(self):
         self.regex = re.compile(r">AF_initDataCallback\(({key: 'ds:1'.*?)\);</script>")
-        print('Welcome to Pictriever')
 
     def __call__(self, img):
         timestamp = int(time.time() * 1000)
